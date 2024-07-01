@@ -1,3 +1,4 @@
+from tests import DEBUG
 from typing import Optional
 from torch import nn
 import torch
@@ -5,15 +6,19 @@ import torch.nn.functional as F
 import math
 
 
-def create_kqv_matrix(input_vector_dim, n_heads = 1):
-    return nn.Linear(0, 0) # TODO fill in the correct dimensions
+def create_kqv_matrix(input_vector_dim, n_heads=1):
+    linear = nn.Linear(input_vector_dim, int((3 * (input_vector_dim / n_heads))))
+    if DEBUG:
+        nn.init.constant_(linear.weight, 1.0)
+        nn.init.constant_(linear.bias, 0.0)
+    return linear
+
 
 def kqv(x, linear):
-    raise Exception("Not implemented.")
     B, N, D = x.size()
-    # TODO compute k, q, and v
-    # (can do it in 1 or 2 lines.)
+    k, q, v = torch.split(linear(x), 3, dim=2)
     return k, q, v
+
 
 def attention_scores(a, b):
     raise Exception("Not implemented.")
@@ -27,6 +32,7 @@ def attention_scores(a, b):
     # (can do it in 1 or 2 lines.)
     return A
 
+
 def create_causal_mask(embed_dim, n_heads, max_context_len):
     raise Exception("Not implemented")
     # Return a causal mask (a tensor) with zeroes in dimensions we want to zero out.
@@ -34,10 +40,11 @@ def create_causal_mask(embed_dim, n_heads, max_context_len):
     # it is part of an assignment, and I want you to figure out on your own which arguments
     # are relevant.
 
-    mask = None # TODO replace this line with the creation of a causal mask.
+    mask = None  # TODO replace this line with the creation of a causal mask.
     return mask
 
-def self_attention(v, A, mask = None):
+
+def self_attention(v, A, mask=None):
     raise Exception("Not implemented.")
     # TODO compute sa (corresponding to y in the assignemnt text).
     # This should take very few lines of code.
@@ -50,6 +57,7 @@ def self_attention_layer(x, kqv_matrix, attention_mask):
     att = attention_scores(k, q)
     sa = self_attention(v, att, attention_mask)
     return sa
+
 
 def multi_head_attention_layer(x, kqv_matrices, mask):
     raise Exception("Not implemented.")
