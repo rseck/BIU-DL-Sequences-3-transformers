@@ -21,16 +21,13 @@ def kqv(x, linear):
 
 
 def attention_scores(a, b):
-    raise Exception("Not implemented.")
 
     B1, N1, D1 = a.size()
     B2, N2, D2 = b.size()
     assert B1 == B2
     assert D1 == D2
 
-    # TODO compute A (remember: we are computing *scaled* dot product attention. don't forget the scaling.
-    # (can do it in 1 or 2 lines.)
-    return A
+    return b @ a.transpose(1, 2) / math.sqrt(D1)
 
 
 def create_causal_mask(embed_dim, n_heads, max_context_len):
