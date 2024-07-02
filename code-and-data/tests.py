@@ -57,6 +57,9 @@ def test_self_attention():
                                      [3.5130, 4.5130, 5.5130]]])
     torch.allclose(output, expected_output)
 
+    mask = attention.create_causal_mask(3, 2, 6)
+    masked_output = attention.self_attention(v, A, mask)
+
 
 if __name__ == '__main__':
     # test_kqv()

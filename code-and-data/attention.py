@@ -31,14 +31,7 @@ def attention_scores(a, b):
 
 
 def create_causal_mask(embed_dim, n_heads, max_context_len):
-    raise Exception("Not implemented")
-    # Return a causal mask (a tensor) with zeroes in dimensions we want to zero out.
-    # This function receives more arguments than it actually needs. This is just because
-    # it is part of an assignment, and I want you to figure out on your own which arguments
-    # are relevant.
-
-    mask = None  # TODO replace this line with the creation of a causal mask.
-    return mask
+    return torch.tril(torch.ones((1, max_context_len, max_context_len)))
 
 
 def self_attention(v, A, mask=None):
@@ -47,6 +40,9 @@ def self_attention(v, A, mask=None):
     assert B1 == B2
     assert N1 == N2
     assert N1 == D2
+    if mask is not None:
+        M = mask[0, :N2, :N2]
+        A = A.masked_fill(M == 0, float("-inf"))
     # softmax over rows of attention matrix, q_i is constant while k_j varies
     return torch.nn.functional.softmax(A, dim=2) @ v
 
