@@ -61,7 +61,27 @@ def test_self_attention():
     masked_output = attention.self_attention(v, A, mask)
 
 
+def test_multi_head_attention_layer():
+    n_heads = 2
+    b, n, d = 3, 4, n_heads * 3
+    x = torch.ones(b, n, d)
+    kqv_matrices = nn.ModuleList([attention.create_kqv_matrix(d, n_heads) for i in range(n_heads)])
+    mask = attention.create_causal_mask(d, n_heads, 6)
+    attention.multi_head_attention_layer(x, kqv_matrices, mask)
+
+
+def test_causal_self_attention():
+    n_heads = 2
+    b, n, d = 3, 4, n_heads * 3
+    max_context_len = 6
+    causual_self_attention_model = attention.CausalSelfAttention(d, n_heads, max_context_len)
+    x = torch.ones(b, n, d)
+    attention_on_x = causual_self_attention_model(x)
+
+
 if __name__ == '__main__':
-    # test_kqv()
-    # test_attention_scores()
+    test_kqv()
+    test_attention_scores()
     test_self_attention()
+    test_multi_head_attention_layer()
+    test_causal_self_attention()
