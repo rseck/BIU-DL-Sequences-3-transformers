@@ -47,6 +47,18 @@ def test_kqv():
             assert torch.equal(expected_output, v)
 
 
+def test_self_attention():
+    v = torch.tensor([[[1.0, 2.0, 3.0],
+                       [4.0, 5.0, 6.0]]])
+    A = torch.tensor([[[0.1, 0.2],
+                       [0.3, 0.4]]])
+    output = attention.self_attention(v, A)
+    expected_output = torch.tensor([[[2.4283, 3.4283, 4.4283],
+                                     [3.5130, 4.5130, 5.5130]]])
+    torch.allclose(output, expected_output)
+
+
 if __name__ == '__main__':
     # test_kqv()
-    test_attention_scores()
+    # test_attention_scores()
+    test_self_attention()

@@ -42,11 +42,13 @@ def create_causal_mask(embed_dim, n_heads, max_context_len):
 
 
 def self_attention(v, A, mask=None):
-    raise Exception("Not implemented.")
-    # TODO compute sa (corresponding to y in the assignemnt text).
-    # This should take very few lines of code.
-    # As usual, the dimensions of v and of sa are (b x n x d).
-    return sa
+    B1, N1, D1 = v.size()
+    B2, N2, D2 = A.size()
+    assert B1 == B2
+    assert N1 == N2
+    assert N1 == D2
+    # softmax over rows of attention matrix, q_i is constant while k_j varies
+    return torch.nn.functional.softmax(A, dim=2) @ v
 
 
 def self_attention_layer(x, kqv_matrix, attention_mask):
