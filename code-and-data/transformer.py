@@ -96,22 +96,16 @@ class TransformerLM(nn.Module):
         return logits
 
     def init_weights(self):
-        # initialize weights
-        # TODO implement initialization logic for embeddings and linear layers.
-        # The code break down the parameters by type (layer-norm, linear, embedding),
-        # but can also condition on individual names, for example by checking pn.endswith(...).
         for pn, p in self.named_parameters():
             if isinstance(p, nn.LayerNorm):
                 torch.nn.init.zeros_(p.bias)
                 torch.nn.init.ones_(p.weight)
             elif isinstance(p, nn.Linear):
-                # TODO initialize p.weight and p.bias (if it is not None).
-                # You can look at initializers in torch.nn.init
-                pass
+                torch.nn.init.normal_(p.weight, std=0.02)
+                torch.nn.init.normal_(p.bias, std=0.02)
             elif isinstance(p, nn.Embedding):
-                # TODO initialize p.weight and p.bias (if it is not None).
-                # You can look at initializers in torch.nn.init
-                pass
+                torch.nn.init.normal_(p.weight, std=0.02)
+                torch.nn.init.normal_(p.bias, std=0.02)
 
     def sample_continuation(self, prefix: list[int], max_tokens_to_generate: int) -> list[int]:
         feed_to_lm = prefix[:]
