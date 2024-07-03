@@ -25,15 +25,18 @@ class TransformerDecoderBlock(nn.Module):
 
     def forward(self, inputs):
         if self.with_residuals:
-            raise Exception("Not implemented")
-            # TODO add residuals support.
+            x = inputs
+            x = self.layer_norm_1(x)
+            x = self.causal_attention(x)
+            x = self.layer_norm_2(x) + inputs
+            x = self.mlp(x) + x
         else:
             x = inputs
             x = self.layer_norm_1(x)
             x = self.causal_attention(x)
             x = self.layer_norm_2(x)
             x = self.mlp(x)
-            return x
+        return x
 
 
 class Embed(nn.Module):
