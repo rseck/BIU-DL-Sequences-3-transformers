@@ -1,7 +1,7 @@
 from __future__ import annotations
+
 import torch
-from torch import nn
-import torch.nn.functional as F
+
 
 def batch_to_labeled_samples(batch: torch.IntTensor) -> [torch.IntTensor, torch.IntTensor]:
     raise Exception("Not implemented.")
@@ -11,7 +11,7 @@ def batch_to_labeled_samples(batch: torch.IntTensor) -> [torch.IntTensor, torch.
     # That is, if our input is of dimension (b x n) our output is two tensors, each of dimension (b x n-1)
     inputs = batch[:,:] # TODO fix this
     labels = batch[:,:] # TODO fix this
-    return (inputs, labels)
+    return inputs, labels
 
 def compute_loss(logits, gold_labels):
     # logits size is (batch, seq_len, vocab_size)

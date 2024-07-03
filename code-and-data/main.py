@@ -1,14 +1,13 @@
 from __future__ import annotations
+
 import torch
+from torch import optim
 
-if __name__ == '__main__':
-    import torch
-    from torch import nn
-    from torch import optim
-    from transformer import TransformerLM
-    import data
-    import lm
+import data
+import lm
+from transformer import TransformerLM
 
+if __name__ == "__main__":
     seq_len = 128
     batch_size = 64
     data_path = "data/"
@@ -27,26 +26,25 @@ if __name__ == '__main__':
     # They will be shortened by 1 when converted to training examples.
     data_iter = iter(data.RandomOrderDataIterator(tokenized_data, seq_len + 1))
 
-    model: torch.nn.Module = TransformerLM(
-            n_layers,
-            n_heads,
-            embed_size,
-            seq_len,
-            tokenizer.vocab_size(),
-            mlp_hidden_size,
-            with_residuals = True,
-        )
+    model = TransformerLM(
+        n_layers,
+        n_heads,
+        embed_size,
+        seq_len,
+        tokenizer.vocab_size(),
+        mlp_hidden_size,
+        with_residuals=True,
+    )
 
-    optimizer = optim.AdamW(model.parameters(), lr=learning_rate, betas=[0.9, 0.95])
-
-
+    optimizer = optim.AdamW(model.parameters(), lr=learning_rate, betas=(0.9, 0.95))
 
     model.train()
-    
+
     num_batches = 0
     while True:
         for batch in data.batch_items(data_iter, batch_size):
-            if num_batches >= num_batches_to_train: break
+            if num_batches >= num_batches_to_train:
+                break
             num_batches = num_batches + 1
 
             batch_x, batch_y = lm.batch_to_labeled_samples(batch)
@@ -67,7 +65,9 @@ if __name__ == '__main__':
                 if num_batches % 100 == 0:
                     for _ in range(1):
                         model.eval()
-                        sampled = tokenizer.detokenize(model.sample_continuation(tokenizer.tokenize("Hello"), 500))
+                        sampled = tokenizer.detokenize(
+                            model.sample_continuation(tokenizer.tokenize("Hello"), 500)
+                        )
                         model.train()
                         print(f"Model sample: '''{sampled}'''")
                     print("")
