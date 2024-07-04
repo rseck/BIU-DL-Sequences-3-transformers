@@ -14,8 +14,9 @@ def create_kqv_matrix(input_vector_dim, n_heads=1):
 
 
 def kqv(x, linear):
+    x = linear(x)
     B, N, D = x.size()
-    k, q, v = torch.split(linear(x), 3, dim=2)
+    k, q, v = torch.split(x, D // 3, dim=2)
     return k, q, v
 
 
