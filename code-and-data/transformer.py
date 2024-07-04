@@ -101,11 +101,11 @@ class TransformerLM(nn.Module):
                 torch.nn.init.zeros_(p.bias)
                 torch.nn.init.ones_(p.weight)
             elif isinstance(p, nn.Linear):
-                torch.nn.init.normal_(p.weight, std=0.02)
-                torch.nn.init.normal_(p.bias, std=0.02)
+                torch.nn.init.xaviar_normal_(p.weight)
+                if p.bias is not None:
+                    torch.nn.init.xaviar_normal_(p.bias)
             elif isinstance(p, nn.Embedding):
-                torch.nn.init.normal_(p.weight, std=0.02)
-                torch.nn.init.normal_(p.bias, std=0.02)
+                torch.nn.init.xaviar_normal_(p.weight)
 
     def sample_continuation(self, prefix: list[int], max_tokens_to_generate: int) -> list[int]:
         feed_to_lm = prefix[:]
