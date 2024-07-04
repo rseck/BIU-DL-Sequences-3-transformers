@@ -7,8 +7,8 @@ def batch_to_labeled_samples(batch: torch.IntTensor) -> [torch.IntTensor, torch.
     # The batches that we get from the reader have corpus-sequences of length max-context + 1.
     # We need to translate them to input/output examples, each of which is shorter by one.
     # That is, if our input is of dimension (b x n) our output is two tensors, each of dimension (b x n-1)
-    inputs = batch[:, :-1]  # TODO fix this
-    labels = batch[:, -1]  # TODO fix this
+    inputs = batch[:, :-1]
+    labels = batch[:, 1:]
     return inputs, labels
 
 
