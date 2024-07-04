@@ -18,4 +18,6 @@ def compute_loss(logits, gold_labels):
     # NOTE remember to handle padding (ignore them in loss calculation!)
     # NOTE cross-entropy expects other dimensions for logits
     # NOTE you can either use cross_entropy from PyTorch, or implement the loss on your own.
-    return ...
+    logits_probs = logits.softmax(dim=-1)
+    logits_probs = logits_probs.permute(0, 2, 1)
+    return torch.nn.functional.cross_entropy(logits_probs, gold_labels)
