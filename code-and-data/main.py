@@ -6,6 +6,7 @@ from torch import optim
 import data
 import lm
 from transformer import TransformerLM
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     seq_len = 128
@@ -41,6 +42,7 @@ if __name__ == "__main__":
     model.train()
 
     num_batches = 0
+    losses = []
     while True:
         for batch in data.batch_items(data_iter, batch_size):
             if num_batches >= num_batches_to_train:
@@ -55,6 +57,7 @@ if __name__ == "__main__":
 
             # parameters update
             model.zero_grad()
+            losses.append(loss.item())
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
             optimizer.step()
@@ -70,4 +73,8 @@ if __name__ == "__main__":
                         )
                         model.train()
                         print(f"Model sample: '''{sampled}'''")
+                        if num_batches % 10000 == 0:
+                            torch.save(model.state_dict(), f"llm_model_{num_batches}.pth")
                     print("")
+    plt.plot(losses) # noqa
+    plt.savefig(f"llm_losses.png")
