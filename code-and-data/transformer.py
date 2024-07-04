@@ -48,7 +48,7 @@ class Embed(nn.Module):
 
     def forward(self, x):
         tok_embeddings = self.token_embeddings(x)
-        pos_embeddings = self.position_embeddings(torch.arange(len(x), device=x.device))
+        pos_embeddings = self.position_embeddings(torch.arange(x.shape[-1], device=x.device))
         # x has the shape (b x n) where b is batch dimension and n is sequence length.
         # each item is an int, indicating a vocabulary item.
         # The output should be of shape (b x n x d), where d is the embedding dimension.
