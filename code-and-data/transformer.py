@@ -4,10 +4,8 @@ import torch.nn.functional as F
 import attention
 import mlp
 
-
 class TransformerDecoderBlock(nn.Module):
-    def __init__(self, n_heads: int, embed_size: int, mlp_hidden_size: int, max_context_len,
-                 with_residuals: bool = False):
+    def __init__(self, n_heads: int, embed_size: int, mlp_hidden_size: int, max_context_len, with_residuals: bool = False):
         super().__init__()
         self.causal_attention = attention.CausalSelfAttention(embed_size, n_heads, max_context_len)
         self.mlp = mlp.MLP(embed_size, mlp_hidden_size)
@@ -27,16 +25,15 @@ class TransformerDecoderBlock(nn.Module):
             x = self.mlp(x)
             return x
 
-
 class Embed(nn.Module):
     def __init__(self, vocab_size: int, embed_size: int, max_context_len):
         super().__init__()
-        self.token_embeddings = nn.Embedding(0, 0)  # TODO set the right values
-        self.position_embeddings = nn.Embedding(0, 0)  # TODO set the right values
+        self.token_embeddings = nn.Embedding(0, 0) # TODO set the right values
+        self.position_embeddings = nn.Embedding(0, 0) # TODO set the right values
         self.max_context_len = max_context_len
 
     def forward(self, x):
-        raise Exception("Not implemented")  # TODO implement.
+        raise Exception("Not implemented") # TODO implement.
         # x has the shape (b x n) where b is batch dimension and n is sequence length.
         # each item is an int, indicating a vocabulary item.
         # The output should be of shape (b x n x d), where d is the embedding dimension.
@@ -55,12 +52,10 @@ class TransformerLM(nn.Module):
             vocab_size: int,
             mlp_hidden_size: int,
             with_residuals: bool,
-    ):
+            ):
         super().__init__()
         self.embed = Embed(vocab_size, embed_size, max_context_len)
-        self.layers = nn.ModuleList(
-            [TransformerDecoderBlock(n_heads, embed_size, mlp_hidden_size, max_context_len, with_residuals) for _ in
-             range(n_layers)])
+        self.layers = nn.ModuleList([TransformerDecoderBlock(n_heads, embed_size, mlp_hidden_size, max_context_len, with_residuals) for _ in range(n_layers)])
         self.layer_norm = nn.LayerNorm(embed_size)
         self.word_prediction = nn.Linear(embed_size, vocab_size)
         self.max_context_len = max_context_len
@@ -68,7 +63,7 @@ class TransformerLM(nn.Module):
         self.init_weights()
 
         n_params = sum(p.numel() for p in self.parameters())
-        print("Parameter count: %.2fM" % (n_params / 1e6,))
+        print("Parameter count: %.2fM" % (n_params/1e6,))
 
     def forward(self, inputs):
         x = self.embed(inputs)
@@ -96,6 +91,7 @@ class TransformerLM(nn.Module):
                 # You can look at initializers in torch.nn.init
                 pass
 
+
     def sample_continuation(self, prefix: list[int], max_tokens_to_generate: int) -> list[int]:
         feed_to_lm = prefix[:]
         generated = []
@@ -112,8 +108,7 @@ class TransformerLM(nn.Module):
                 feed_to_lm.append(sampled_token)
         return generated
 
-    def better_sample_continuation(self, prefix: list[int], max_tokens_to_generate: int, temperature: float,
-                                   topK: int) -> list[int]:
+    def better_sample_continuation(self, prefix: list[int], max_tokens_to_generate: int, temperature: float, topK: int) -> list[int]:
         feed_to_lm = prefix[:]
         generated = []
         with torch.no_grad():
