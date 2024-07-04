@@ -124,12 +124,10 @@ class TransformerLM(nn.Module):
                 logits = self(torch.tensor([feed_to_lm], dtype=torch.int32))
                 logits_for_last_token = logits[0][-1]
                 top_values, top_indices_to_tokens = torch.topk(logits_for_last_token, k=topK)
-                top_k_distribution_for_last_token = F.softmax(top_values)
+                top_values_in_temperature = top_values / temperature
+                top_k_distribution_for_last_token = F.softmax(top_values_in_temperature)
                 sampled_token = top_indices_to_tokens[torch.multinomial(
                     top_k_distribution_for_last_token, num_samples=1).item()]
                 generated.append(sampled_token)
                 feed_to_lm.append(sampled_token)
         return generated
-        # Temperature should be the temperature in which you sample.
-        # TopK indicates that we don't sample from the entire distribution, but only from the top k scoring tokens
-        # for the given position.
