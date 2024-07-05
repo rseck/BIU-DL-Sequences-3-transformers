@@ -49,7 +49,6 @@ if __name__ == "__main__":
         if num_batches >= num_batches_to_train:
             break
         num_batches = num_batches + 1
-        print(f"batch number:{num_batches}")
 
         batch_x, batch_y = lm.batch_to_labeled_samples(batch)
 

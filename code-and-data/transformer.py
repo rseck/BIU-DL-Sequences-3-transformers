@@ -8,12 +8,12 @@ from utils import get_module_device
 
 class TransformerDecoderBlock(nn.Module):
     def __init__(
-        self,
-        n_heads: int,
-        embed_size: int,
-        mlp_hidden_size: int,
-        max_context_len,
-        with_residuals: bool = False,
+            self,
+            n_heads: int,
+            embed_size: int,
+            mlp_hidden_size: int,
+            max_context_len,
+            with_residuals: bool = False,
     ):
         super().__init__()
         self.causal_attention = attention.CausalSelfAttention(
@@ -58,19 +58,22 @@ class Embed(nn.Module):
         return tok_embeddings + pos_embeddings
 
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 class TransformerLM(nn.Module):
     def __init__(
-        self,
-        n_layers: int,
-        n_heads: int,
-        embed_size: int,
-        max_context_len: int,
-        vocab_size: int,
-        mlp_hidden_size: int,
-        with_residuals: bool,
+            self,
+            n_layers: int,
+            n_heads: int,
+            embed_size: int,
+            max_context_len: int,
+            vocab_size: int,
+            mlp_hidden_size: int,
+            with_residuals: bool,
     ):
         super().__init__()
-        self.embed = Embed(vocab_size, embed_size, max_context_len)
+        self.embed = Embed(vocab_size, embed_size, max_context_len).to(device)
         self.layers = nn.ModuleList(
             [
                 TransformerDecoderBlock(
@@ -117,7 +120,7 @@ class TransformerLM(nn.Module):
             while len(generated) < max_tokens_to_generate:
                 if len(feed_to_lm) > self.max_context_len:
                     # if we have more tokens than context length, trim it to context length.
-                    feed_to_lm = feed_to_lm[-self.max_context_len :]
+                    feed_to_lm = feed_to_lm[-self.max_context_len:]
                 logits = self(torch.tensor([feed_to_lm], dtype=torch.int32, device=get_module_device(self)))
                 logits_for_last_token = logits[0][-1]
                 distribution_for_last_token = F.softmax(logits_for_last_token)
