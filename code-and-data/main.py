@@ -21,6 +21,7 @@ if __name__ == "__main__":
     gradient_clipping = 1.0
 
     num_batches_to_train = 50000
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     tokenizer, tokenized_data = data.load_data(data_path)
     # NOTE: are data items are longer by one than the sequence length,
@@ -35,7 +36,7 @@ if __name__ == "__main__":
         tokenizer.vocab_size(),
         mlp_hidden_size,
         with_residuals=True,
-    )
+    ).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=learning_rate, betas=(0.9, 0.95))
 
@@ -51,9 +52,9 @@ if __name__ == "__main__":
 
             batch_x, batch_y = lm.batch_to_labeled_samples(batch)
 
-            logits = model(batch_x)
+            logits = model(batch_x.to(device))
 
-            loss = lm.compute_loss(logits, batch_y)
+            loss = lm.compute_loss(logits, batch_y.to(device))
 
             # parameters update
             model.zero_grad()
