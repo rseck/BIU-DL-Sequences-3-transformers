@@ -8,12 +8,12 @@ from utils import get_module_device
 
 class TransformerDecoderBlock(nn.Module):
     def __init__(
-            self,
-            n_heads: int,
-            embed_size: int,
-            mlp_hidden_size: int,
-            max_context_len,
-            with_residuals: bool = False,
+        self,
+        n_heads: int,
+        embed_size: int,
+        mlp_hidden_size: int,
+        max_context_len,
+        with_residuals: bool = False,
     ):
         super().__init__()
         self.causal_attention = attention.CausalSelfAttention(
@@ -58,19 +58,16 @@ class Embed(nn.Module):
         return tok_embeddings + pos_embeddings
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
 class TransformerLM(nn.Module):
     def __init__(
-            self,
-            n_layers: int,
-            n_heads: int,
-            embed_size: int,
-            max_context_len: int,
-            vocab_size: int,
-            mlp_hidden_size: int,
-            with_residuals: bool,
+        self,
+        n_layers: int,
+        n_heads: int,
+        embed_size: int,
+        max_context_len: int,
+        vocab_size: int,
+        mlp_hidden_size: int,
+        with_residuals: bool,
     ):
         super().__init__()
         self.embed = Embed(vocab_size, embed_size, max_context_len)
