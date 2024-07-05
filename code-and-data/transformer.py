@@ -73,7 +73,7 @@ class TransformerLM(nn.Module):
             with_residuals: bool,
     ):
         super().__init__()
-        self.embed = Embed(vocab_size, embed_size, max_context_len).to(device)
+        self.embed = Embed(vocab_size, embed_size, max_context_len)
         self.layers = nn.ModuleList(
             [
                 TransformerDecoderBlock(

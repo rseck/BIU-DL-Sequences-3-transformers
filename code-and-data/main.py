@@ -45,43 +45,44 @@ if __name__ == "__main__":
     num_batches = 0
     losses = []
 
-    for batch in data.batch_items(data_iter, batch_size):
-        if num_batches >= num_batches_to_train:
-            break
-        num_batches = num_batches + 1
+    while num_batches < num_batches_to_train:
+        for batch in data.batch_items(data_iter, batch_size):
+            if num_batches >= num_batches_to_train:
+                break
+            num_batches = num_batches + 1
 
-        batch_x, batch_y = lm.batch_to_labeled_samples(batch)
+            batch_x, batch_y = lm.batch_to_labeled_samples(batch)
 
-        logits = model(batch_x.to(device))
+            logits = model(batch_x.to(device))
 
-        loss = lm.compute_loss(logits, batch_y.to(device))
+            loss = lm.compute_loss(logits, batch_y.to(device))
 
-        # parameters update
-        model.zero_grad()
-        losses.append(loss.item())
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
-        optimizer.step()
+            # parameters update
+            model.zero_grad()
+            losses.append(loss.item())
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
+            optimizer.step()
 
-        num_batches += 1
-        if num_batches % 10 == 0:
-            print(f"Seen {num_batches} batches. last loss is: {loss.item()}")
-            if num_batches % 100 == 0:
-                for _ in range(1):
-                    model.eval()
-                    # temperature( < 1) makes the model return more confident results (reducing entropy),
-                    # while increasing the temperature ( > 1) makes the model return less confident results
-                    # (increasing entropy).
-                    sampled = tokenizer.detokenize(
-                        model.better_sample_continuation(tokenizer.tokenize("Hello"),
-                                                         500,
-                                                         0.7,
-                                                         5)
-                    )
-                    model.train()
-                    print(f"Model sample: '''{sampled}'''")
-                    if num_batches % 10000 == 0:
-                        torch.save(model.state_dict(), f"llm_model_{num_batches}.pth")
-                print("")
+            num_batches += 1
+            if num_batches % 10 == 0:
+                print(f"Seen {num_batches} batches. last loss is: {loss.item()}")
+                if num_batches % 100 == 0:
+                    for _ in range(1):
+                        model.eval()
+                        # temperature( < 1) makes the model return more confident results (reducing entropy),
+                        # while increasing the temperature ( > 1) makes the model return less confident results
+                        # (increasing entropy).
+                        sampled = tokenizer.detokenize(
+                            model.better_sample_continuation(tokenizer.tokenize("Hello"),
+                                                             500,
+                                                             0.7,
+                                                             5)
+                        )
+                        model.train()
+                        print(f"Model sample: '''{sampled}'''")
+                        if num_batches % 10000 == 0:
+                            torch.save(model.state_dict(), f"llm_model_{num_batches}.pth")
+                    print("")
     plt.plot(losses) # noqa
     plt.savefig(f"llm_losses.png")
