@@ -7,12 +7,12 @@ import mlp
 
 class TransformerDecoderBlock(nn.Module):
     def __init__(
-        self,
-        n_heads: int,
-        embed_size: int,
-        mlp_hidden_size: int,
-        max_context_len,
-        with_residuals: bool = False,
+            self,
+            n_heads: int,
+            embed_size: int,
+            mlp_hidden_size: int,
+            max_context_len,
+            with_residuals: bool = False,
     ):
         super().__init__()
         self.causal_attention = attention.CausalSelfAttention(
@@ -59,14 +59,14 @@ class Embed(nn.Module):
 
 class TransformerLM(nn.Module):
     def __init__(
-        self,
-        n_layers: int,
-        n_heads: int,
-        embed_size: int,
-        max_context_len: int,
-        vocab_size: int,
-        mlp_hidden_size: int,
-        with_residuals: bool,
+            self,
+            n_layers: int,
+            n_heads: int,
+            embed_size: int,
+            max_context_len: int,
+            vocab_size: int,
+            mlp_hidden_size: int,
+            with_residuals: bool,
     ):
         super().__init__()
         self.embed = Embed(vocab_size, embed_size, max_context_len)
@@ -97,6 +97,8 @@ class TransformerLM(nn.Module):
 
     def init_weights(self):
         for pn, p in self.named_parameters():
+            if isinstance(p, nn.LayerNorm) or isinstance(p, nn.Linear) or isinstance(p, nn.Embedding):
+                print("something actually got custom initialized")
             if isinstance(p, nn.LayerNorm):
                 torch.nn.init.zeros_(p.bias)
                 torch.nn.init.ones_(p.weight)
@@ -114,7 +116,7 @@ class TransformerLM(nn.Module):
             while len(generated) < max_tokens_to_generate:
                 if len(feed_to_lm) > self.max_context_len:
                     # if we have more tokens than context length, trim it to context length.
-                    feed_to_lm = feed_to_lm[-self.max_context_len :]
+                    feed_to_lm = feed_to_lm[-self.max_context_len:]
                 logits = self(torch.tensor([feed_to_lm], dtype=torch.int32))
                 logits_for_last_token = logits[0][-1]
                 distribution_for_last_token = F.softmax(logits_for_last_token)
@@ -123,7 +125,8 @@ class TransformerLM(nn.Module):
                 feed_to_lm.append(sampled_token)
         return generated
 
-    def better_sample_continuation(self, prefix: list[int], max_tokens_to_generate: int, temperature: float, topK: int) -> list[int]:
+    def better_sample_continuation(self, prefix: list[int], max_tokens_to_generate: int, temperature: float,
+                                   topK: int) -> list[int]:
         feed_to_lm = prefix[:]
         generated = []
         with torch.no_grad():
@@ -135,9 +138,9 @@ class TransformerLM(nn.Module):
                 logits_for_last_token = logits[0][-1]
                 top_values, top_indices_to_tokens = torch.topk(logits_for_last_token, k=topK)
                 top_values_in_temperature = top_values / temperature
-                top_k_distribution_for_last_token = F.softmax(top_values_in_temperature)
+                top_k_distribution_for_last_token = F.softmax(top_values_in_temperature, dim=0)
                 sampled_token = top_indices_to_tokens[torch.multinomial(
-                    top_k_distribution_for_last_token, num_samples=1).item()]
+                    top_k_distribution_for_last_token, num_samples=1).item()].item()
                 generated.append(sampled_token)
                 feed_to_lm.append(sampled_token)
         return generated

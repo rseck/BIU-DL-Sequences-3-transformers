@@ -68,8 +68,14 @@ if __name__ == "__main__":
                 if num_batches % 100 == 0:
                     for _ in range(1):
                         model.eval()
+                        # temperature( < 1) makes the model return more confident results (reducing entropy),
+                        # while increasing the temperature ( > 1) makes the model return less confident results
+                        # (increasing entropy).
                         sampled = tokenizer.detokenize(
-                            model.sample_continuation(tokenizer.tokenize("Hello"), 500)
+                            model.better_sample_continuation(tokenizer.tokenize("Hello"),
+                                                             500,
+                                                             0.7,
+                                                             5)
                         )
                         model.train()
                         print(f"Model sample: '''{sampled}'''")
