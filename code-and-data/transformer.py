@@ -141,7 +141,7 @@ class TransformerLM(nn.Module):
                 if len(feed_to_lm) > self.max_context_len:
                     # if we have more tokens than context length, trim it to context length.
                     feed_to_lm = feed_to_lm[-self.max_context_len:]
-                logits = self(torch.tensor([feed_to_lm], dtype=torch.int32))
+                logits = self(torch.tensor([feed_to_lm], dtype=torch.int32, device=get_module_device(self)))
                 logits_for_last_token = logits[0][-1]
                 top_values, top_indices_to_tokens = torch.topk(logits_for_last_token, k=topK)
                 top_values_in_temperature = top_values / temperature
