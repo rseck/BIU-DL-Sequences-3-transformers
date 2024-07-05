@@ -25,8 +25,8 @@ def attention_scores(a, b):
     B2, N2, D2 = b.size()
     assert B1 == B2
     assert D1 == D2
-
-    #todo check possible bug that we need one more transpose over all
+    # the result is where result[batch_index][i] = Att_xi from slide 109 in lec6_2024.pdf (without softmax)
+    # so result[batch_index][i][j] = dot(q_i, K_j)/sqrt(dim_k)
     return b @ a.transpose(1, 2) / math.sqrt(D1)
 
 
@@ -43,7 +43,9 @@ def self_attention(v, A, mask=None):
     if mask is not None:
         M = mask[0, :N2, :N2]
         A = A.masked_fill(M == 0, float("-inf"))
-    # softmax over rows of attention matrix, q_i is constant while k_j varies
+    # softmax over each vector of attention of x_i, q_i is constant while k_j varies, this is the third dim in A
+    # in this multiplication in a single operation we take the weights and sum the vectors to get the weighted results
+    # each result[batch_index][i]= weighted vectors V summed with weights for attention x_i
     return F.softmax(A, dim=2) @ v
 
 
