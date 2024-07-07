@@ -44,17 +44,20 @@ if __name__ == "__main__":
 
     num_batches = 0
     losses = []
-
     while num_batches < num_batches_to_train:
         for batch in data.batch_items(data_iter, batch_size):
             if num_batches >= num_batches_to_train:
                 break
             num_batches = num_batches + 1
-            model.zero_grad()
+
             batch_x, batch_y = lm.batch_to_labeled_samples(batch)
+
             logits = model(batch_x.to(device))
+
             loss = lm.compute_loss(logits, batch_y.to(device))
+
             # parameters update
+            model.zero_grad()
             losses.append(loss.item())
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
