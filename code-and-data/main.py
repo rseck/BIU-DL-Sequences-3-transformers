@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     num_batches = 0
     losses = []
-    while True:
+    while num_batches < num_batches_to_train:
         for batch in data.batch_items(data_iter, batch_size):
             if num_batches >= num_batches_to_train:
                 break
