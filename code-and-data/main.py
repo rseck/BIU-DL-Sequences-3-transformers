@@ -19,6 +19,7 @@ if __name__ == "__main__":
 
     learning_rate = 5e-4
     gradient_clipping = 1.0
+    weight_decay = 0.01
 
     num_batches_to_train = 50000
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,7 +39,9 @@ if __name__ == "__main__":
         with_residuals=True,
     ).to(device)
 
-    optimizer = optim.AdamW(model.parameters(), lr=learning_rate, betas=(0.9, 0.95))
+    optimizer = optim.AdamW(
+        model.parameters(), lr=learning_rate, betas=(0.9, 0.95), weight_decay=weight_decay
+    )
 
     model.train()
 
@@ -77,5 +80,5 @@ if __name__ == "__main__":
                         if num_batches % 10000 == 0:
                             torch.save(model.state_dict(), f"llm_model_{num_batches}.pth")
                     print("")
-    plt.plot(losses) # noqa
+    plt.plot(losses)  # noqa
     plt.savefig(f"llm_losses.png")
