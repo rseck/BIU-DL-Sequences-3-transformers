@@ -22,6 +22,7 @@ if __name__ == "__main__":
     weight_decay = 0.01
 
     num_batches_to_train = 50000
+    use_scheduler = True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     tokenizer, tokenized_data = data.load_data(data_path)
@@ -41,6 +42,9 @@ if __name__ == "__main__":
 
     optimizer = optim.AdamW(
         model.parameters(), lr=learning_rate, betas=(0.9, 0.95), weight_decay=weight_decay
+    )
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=num_batches_to_train // 5, gamma=0.8
     )
 
     model.train()
@@ -65,6 +69,8 @@ if __name__ == "__main__":
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
             optimizer.step()
+            if use_scheduler:
+                scheduler.step()
 
             num_batches += 1
             if num_batches % 10 == 0:
