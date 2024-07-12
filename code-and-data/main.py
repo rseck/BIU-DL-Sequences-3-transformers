@@ -11,7 +11,7 @@ import lm
 from transformer import TransformerLM
 import matplotlib.pyplot as plt
 
-DEBUG = True
+DEBUG = False
 
 
 def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size, mlp_hidden_size, learning_rate,
@@ -37,7 +37,7 @@ def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
 
 def main():
     seq_len = 128
-    batch_size = 64
+    batch_size = 128
     data_path = "data/"
     results_path = "results"
     n_layers = 6
