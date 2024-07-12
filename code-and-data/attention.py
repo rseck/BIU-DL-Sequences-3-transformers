@@ -1,8 +1,9 @@
-from tests import DEBUG
 from torch import nn
 import torch
 import torch.nn.functional as F
 import math
+
+DEBUG = False
 
 
 def create_kqv_matrix(input_vector_dim, n_heads=1):
