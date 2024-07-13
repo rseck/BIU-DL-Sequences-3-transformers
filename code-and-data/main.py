@@ -110,7 +110,6 @@ def main():
                 if use_scheduler:
                     scheduler.step()
 
-                num_batches += 1
                 if num_batches % 10 == 0:
                     print(f"Seen {num_batches} batches. last loss is: {loss.item()}")
                     if num_batches % 100 == 0:
