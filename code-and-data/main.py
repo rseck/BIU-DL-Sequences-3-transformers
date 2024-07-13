@@ -36,14 +36,14 @@ def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
 
 
 def main():
-    for layers_num in [6, 12, 24]:
+    for e_size in [256, 512]:
         seq_len = 128
         batch_size = 128
         data_path = "data/"
         results_path = "results"
-        n_layers = layers_num
+        n_layers = 6
         n_heads = 6
-        embed_size = 192
+        embed_size = e_size
         mlp_hidden_size = embed_size * 4
 
         learning_rate = 5e-4
