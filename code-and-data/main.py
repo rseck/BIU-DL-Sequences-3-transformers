@@ -131,6 +131,8 @@ def main():
                                 torch.save(model.state_dict(),
                                            os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
                         print("")
+        torch.save(model.state_dict(),
+                   os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
         plt.plot(losses)  # noqa
         plt.savefig(os.path.join(results_path, f"llm_losses_{run_file_name}.png"))
         with open(loss_file_name, "a") as output:
