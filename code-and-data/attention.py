@@ -78,9 +78,11 @@ class CausalSelfAttention(nn.Module):
         self.register_buffer("mask", mask)
         self.n_heads = n_heads
         self.embed_dim = embed_dim
+        self.dropout = nn.Dropout(p=0.1)
         self.proj = nn.Linear(embed_dim, embed_dim)
 
     def forward(self, x):
         sa = multi_head_attention_layer(x, self.kqv_matrices, self.mask)
+        sa = self.dropout(sa)
         sa = self.proj(sa)
         return sa

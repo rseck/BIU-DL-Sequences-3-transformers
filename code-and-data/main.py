@@ -31,7 +31,7 @@ def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
     nbtt = num_batches_to_train
     us = use_scheduler
 
-    return (f"s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".
+    return (f"with_dropout_s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".
             replace('/', ''))
 
 
@@ -50,7 +50,7 @@ def main():
         gradient_clipping = 1.0
         weight_decay = 0.01
 
-        num_batches_to_train = 100 if DEBUG else 25000
+        num_batches_to_train = 10 if DEBUG else 25000
 
         use_scheduler = True
 

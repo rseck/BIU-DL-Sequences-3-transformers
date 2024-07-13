@@ -71,6 +71,7 @@ class TransformerLM(nn.Module):
     ):
         super().__init__()
         self.embed = Embed(vocab_size, embed_size, max_context_len)
+        self.dropout = nn.Dropout(p=0.1)
         self.layers = nn.ModuleList(
             [
                 TransformerDecoderBlock(
@@ -90,6 +91,7 @@ class TransformerLM(nn.Module):
 
     def forward(self, inputs):
         x = self.embed(inputs)
+        x = self.dropout(x)
         for layer in self.layers:
             x = layer(x)
         x = self.layer_norm(x)
