@@ -49,7 +49,7 @@ def main():
     gradient_clipping = 1.0
     weight_decay = 0.01
 
-    num_batches_to_train = 100 if DEBUG else 50000
+    num_batches_to_train = 100 if DEBUG else 25000
 
     use_scheduler = True
 
