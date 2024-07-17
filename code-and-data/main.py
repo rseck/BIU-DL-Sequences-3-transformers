@@ -31,7 +31,7 @@ def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
     us = use_scheduler
 
     return (
-        f"without_proper_init_with_dropout_s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".
+        f"with_init_without_dropout_s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".
         replace('/', ''))
 
 
