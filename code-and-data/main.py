@@ -61,8 +61,6 @@ def main():
     seq_len = 128
     batch_size = 128
     data_path = "data/"
-    train_path = "data/train/"
-    dev_path = "data/dev/"
     results_path = "temp_results"
     n_layers = 6
     n_heads = 6
@@ -81,21 +79,14 @@ def main():
                                   mlp_hidden_size, learning_rate, gradient_clipping, weight_decay,
                                   num_batches_to_train, use_scheduler)
     loss_file_name = os.path.join(results_path, 'losses' + run_file_name + '.json')
-    dev_loss_file_name = os.path.join(results_path, 'dev_losses' + run_file_name + '.json')
     sampling_file_name = os.path.join(results_path, 'sampling' + run_file_name + '.json')
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     tokenizer, tokenized_data = data.load_data(data_path)
-    train_tokenizer, tokenized_train_data = data.load_data(train_path)
     # NOTE: are data items are longer by one than the sequence length,
     # They will be shortened by 1 when converted to training examples.
-    train_iter = iter(data.RandomOrderDataIterator(tokenized_train_data, seq_len + 1))
-
-    dev_tokenizer, tokenized_dev_data = data.load_data(dev_path)
-    # NOTE: are data items are longer by one than the sequence length,
-    # They will be shortened by 1 when converted to training examples.
-    dev_iter = iter(data.RandomOrderDataIterator(tokenized_dev_data, seq_len + 1))
+    data_iter = iter(data.RandomOrderDataIterator(tokenized_data, seq_len + 1))
 
     model = TransformerLM(
         n_layers,
@@ -118,9 +109,8 @@ def main():
     num_batches = 0
     losses = []
     samples = []
-    dev_losses = []
     while num_batches < num_batches_to_train:
-        for batch in data.batch_items(train_iter, batch_size):
+        for batch in data.batch_items(data_iter, batch_size):
             if num_batches >= num_batches_to_train:
                 break
             num_batches = num_batches + 1
@@ -137,9 +127,7 @@ def main():
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
             optimizer.step()
-            # if use_scheduler:
-                # scheduler.step()
-
+            # if use_scheduler: scheduler.step()
             if num_batches % 10 == 0:
                 print(f"Seen {num_batches} batches. last loss is: {loss.item()}")
                 if num_batches % 100 == 0:
@@ -161,21 +149,6 @@ def main():
                             torch.save(model.state_dict(),
                                        os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
                     print("")
-                    num_batches_to_eval = 20
-                    num_dev_batches = 0
-                    dev_loss = 0
-                    for dev_batch in data.batch_items(dev_iter, batch_size):
-                        if num_dev_batches >= num_batches_to_eval:
-                            break
-                        num_dev_batches += 1
-                        dev_batch_x, dev_batch_y = lm.batch_to_labeled_samples(dev_batch)
-                        logits = model(dev_batch_x.to(device))
-                        dev_batch_loss = lm.compute_loss(logits, dev_batch_y.to(device))
-                        dev_loss += dev_batch_loss.item()
-                        print(f"Seen {num_dev_batches} dev batches. DEV last loss is: {dev_batch_loss.item()}")
-                    dev_losses.append(dev_loss / num_dev_batches)
-                    print(f"Seen {num_batches} batches. DEV last average loss is: {dev_loss / num_dev_batches}")
-                    model.train()
     torch.save(model.state_dict(),
                os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
     plt.clf()
@@ -185,10 +158,6 @@ def main():
         json.dump(losses, output, indent=4)
     with open(sampling_file_name, mode="a", encoding='utf-8') as output:
         json.dump(samples, output, ensure_ascii=False, indent=4)
-    with open(dev_loss_file_name, "a") as output:
-        json.dump(dev_losses, output, indent=4)
-    plt.clf()
-    save_plot_of_loss_on_train_and_test(losses, dev_losses, results_path, run_file_name)
 
 
 if __name__ == "__main__":
