@@ -43,7 +43,7 @@ def save_plot_of_loss_on_train_and_test(train_loss, test_loss, results_path, run
     x_A = np.arange(len(A))
 
     # X-axis for B, taking every 100th value
-    x_B = np.arange(0, len(A), 10)
+    x_B = np.arange(0, len(A), 100)
 
     # Plotting
     plt.figure(figsize=(10, 6))
