@@ -99,20 +99,21 @@ class TransformerLM(nn.Module):
         return logits
 
     def init_weights(self):
-        for name, module in self.named_modules():
-            # print(f"Module name: {name}")
-            init_module(module)
-            # print(module)
-            if isinstance(module, nn.ModuleList):
-                for sub_name, sub_module in module.named_modules():
-                    # print(f"sub_Module name: {sub_name}")
-                    init_module(sub_module)
-                    # print(sub_module)
-                    if isinstance(sub_module, nn.ModuleList):
-                        for sub_sub_name, sub_sub_module in sub_module.named_modules():
-                            # print(f"sub_sub_Module name: {sub_sub_name}")
-                            init_module(sub_sub_module)
-                            # print(sub_sub_module)
+        return
+        # for name, module in self.named_modules():
+        #     # print(f"Module name: {name}")
+        #     init_module(module)
+        #     # print(module)
+        #     if isinstance(module, nn.ModuleList):
+        #         for sub_name, sub_module in module.named_modules():
+        #             # print(f"sub_Module name: {sub_name}")
+        #             init_module(sub_module)
+        #             # print(sub_module)
+        #             if isinstance(sub_module, nn.ModuleList):
+        #                 for sub_sub_name, sub_sub_module in sub_module.named_modules():
+        #                     # print(f"sub_sub_Module name: {sub_sub_name}")
+        #                     init_module(sub_sub_module)
+        #                     # print(sub_sub_module)
 
     def sample_continuation(self, prefix: list[int], max_tokens_to_generate: int) -> list[int]:
         feed_to_lm = prefix[:]
