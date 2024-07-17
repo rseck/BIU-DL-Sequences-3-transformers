@@ -74,7 +74,7 @@ def main():
         gradient_clipping = 1.0
         weight_decay = 0.01
 
-        num_batches_to_train = 10
+        num_batches_to_train = 50000
 
         use_scheduler = True
 
