@@ -70,11 +70,11 @@ def main():
 
         learning_rate = 5e-4
         gradient_clipping = 1.0
-        weight_decay = None
+        weight_decay = 0.01
 
-        num_batches_to_train = 50000
+        num_batches_to_train = 30000
 
-        use_scheduler = False
+        use_scheduler = True
 
         run_file_name = get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
                                       mlp_hidden_size, learning_rate, gradient_clipping, weight_decay,
@@ -100,10 +100,10 @@ def main():
         ).to(device)
 
         optimizer = optim.AdamW(
-            model.parameters(), lr=learning_rate, betas=(0.9, 0.95))
-        # scheduler = torch.optim.lr_scheduler.StepLR(
-        #     optimizer, step_size=num_batches_to_train // 5, gamma=0.8
-        # )
+            model.parameters(), lr=learning_rate, betas=(0.9, 0.95), weight_decay=weight_decay)
+        scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer, step_size=num_batches_to_train // 5, gamma=0.8
+        )
 
         model.train()
 
@@ -128,7 +128,8 @@ def main():
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), gradient_clipping)
                 optimizer.step()
-                # if use_scheduler: scheduler.step()
+                if use_scheduler:
+                    scheduler.step()
                 if num_batches % 10 == 0:
                     print(f"Seen {num_batches} batches. last loss is: {loss.item()}")
                     if num_batches % 100 == 0:
