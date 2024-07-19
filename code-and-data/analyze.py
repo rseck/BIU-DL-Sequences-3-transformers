@@ -40,12 +40,15 @@ def create_heatmap_plot_for_model(model: TransformerLM, x: Tensor):
     plt.show()
 
 
-def main(model_path: str):
+def main(model_path: str, tokenizer_path: str, text: str):
     embed_size = 192
     max_content_len = 128
+    tokenizer = torch.load(tokenizer_path)
+    tokens = torch.tensor([tokenizer.tokenize(text)])
     model = TransformerLM(6, 6, embed_size, max_content_len, 66, 4 * embed_size, True)
     model.load_state_dict(torch.load(model_path))
-    create_heatmap_plot_for_model(model, torch.rand(1, 5, embed_size))
+    embeddings = model.embed(tokens)
+    create_heatmap_plot_for_model(model, embeddings)
 
 
 if __name__ == "__main__":
@@ -54,4 +57,4 @@ if __name__ == "__main__":
         / "results for yedidia"
         / "loss_0.25_llm_model_25000_s_128_b_64_dp_data_nl_6_nh_6_es_192_mhs_768_lr_0.0005_gc_1.0_wd_false_nbtt_25000_us_False.pth"
     )
-    main(path)
+    main(path, "tokenizer.pth", "This is my attempt")
