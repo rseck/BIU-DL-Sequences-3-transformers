@@ -14,8 +14,20 @@ import matplotlib.pyplot as plt
 DEBUG = False
 
 
-def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size, mlp_hidden_size, learning_rate,
-                  gradient_clipping, weight_decay, num_batches_to_train, use_scheduler):
+def get_file_name(
+    seq_len,
+    batch_size,
+    data_path,
+    n_layers,
+    n_heads,
+    embed_size,
+    mlp_hidden_size,
+    learning_rate,
+    gradient_clipping,
+    weight_decay,
+    num_batches_to_train,
+    use_scheduler,
+):
     s = seq_len
     b = batch_size
     dp = data_path
@@ -31,8 +43,9 @@ def get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
     nbtt = num_batches_to_train
     us = use_scheduler
 
-    return (f"with_dropout_s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".
-            replace('/', ''))
+    return f"with_dropout_s_{s}_b_{b}_dp_{dp}_nl_{nl}_nh_{nh}_es_{es}_mhs_{mhs}_lr_{lr}_gc_{gc}_wd_{wd}_nbtt_{nbtt}_us_{us}".replace(
+        "/", ""
+    )
 
 
 def main():
@@ -53,11 +66,22 @@ def main():
 
     use_scheduler = True
 
-    run_file_name = get_file_name(seq_len, batch_size, data_path, n_layers, n_heads, embed_size,
-                                  mlp_hidden_size, learning_rate, gradient_clipping, weight_decay,
-                                  num_batches_to_train, use_scheduler)
-    loss_file_name = os.path.join(results_path, 'losses' + run_file_name + '.json')
-    sampling_file_name = os.path.join(results_path, 'sampling' + run_file_name + '.json')
+    run_file_name = get_file_name(
+        seq_len,
+        batch_size,
+        data_path,
+        n_layers,
+        n_heads,
+        embed_size,
+        mlp_hidden_size,
+        learning_rate,
+        gradient_clipping,
+        weight_decay,
+        num_batches_to_train,
+        use_scheduler,
+    )
+    loss_file_name = os.path.join(results_path, "losses" + run_file_name + ".json")
+    sampling_file_name = os.path.join(results_path, "sampling" + run_file_name + ".json")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -118,25 +142,30 @@ def main():
                         # while increasing the temperature ( > 1) makes the model return less confident results
                         # (increasing entropy).
                         sampled = tokenizer.detokenize(
-                            model.better_sample_continuation(tokenizer.tokenize("Hello"),
-                                                             500,
-                                                             0.7,
-                                                             5)
+                            model.better_sample_continuation(
+                                tokenizer.tokenize("Hello"), 500, 0.7, 5
+                            )
                         )
                         model.train()
                         print(f"Model sample: '''{sampled}'''")
                         samples.append(sampled)
                         if num_batches % 10000 == 0:
-                            torch.save(model.state_dict(),
-                                       os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
+                            torch.save(
+                                model.state_dict(),
+                                os.path.join(
+                                    results_path, f"llm_model_{num_batches}_{run_file_name}.pth"
+                                ),
+                            )
                     print("")
-    torch.save(model.state_dict(),
-               os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
+    torch.save(
+        model.state_dict(),
+        os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"),
+    )
     plt.plot(losses)  # noqa
     plt.savefig(os.path.join(results_path, f"llm_losses_{run_file_name}.png"))
     with open(loss_file_name, "a") as output:
         json.dump(losses, output, indent=4)
-    with open(sampling_file_name, mode="a", encoding='utf-8') as output:
+    with open(sampling_file_name, mode="a", encoding="utf-8") as output:
         json.dump(samples, output, ensure_ascii=False, indent=4)
 
 
