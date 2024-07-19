@@ -86,6 +86,9 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     tokenizer, tokenized_data = data.load_data(data_path)
+    tokenizer_file_path = f"{run_file_name}_tokenizer.pth"
+    torch.save(tokenizer, tokenizer_file_path)
+
     # NOTE: are data items are longer by one than the sequence length,
     # They will be shortened by 1 when converted to training examples.
     data_iter = iter(data.RandomOrderDataIterator(tokenized_data, seq_len + 1))
