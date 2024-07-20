@@ -72,7 +72,7 @@ def main():
         gradient_clipping = 1.0
         weight_decay = 0.01
 
-        num_batches_to_train = 5000
+        num_batches_to_train = 10000
 
         use_scheduler = True
 
@@ -149,7 +149,7 @@ def main():
                             model.train()
                             print(f"Model sample: '''{sampled}'''")
                             samples.append(sampled)
-                            if num_batches % 10000 == 0:
+                            if num_batches % 2500 == 0:
                                 torch.save(model.state_dict(),
                                            os.path.join(results_path, f"llm_model_{num_batches}_{run_file_name}.pth"))
                         print("")
