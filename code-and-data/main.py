@@ -140,8 +140,12 @@ def main():
                             # temperature( < 1) makes the model return more confident results (reducing entropy),
                             # while increasing the temperature ( > 1) makes the model return less confident results
                             # (increasing entropy).
+                            if data_path == "heb-data/":
+                                start_word = "חיים נחמן ביאליק ."
+                            else:
+                                start_word = "my lord"
                             sampled = tokenizer.detokenize(
-                                model.better_sample_continuation(tokenizer.tokenize("Hello"),
+                                model.better_sample_continuation(tokenizer.tokenize(start_word),
                                                                  500,
                                                                  0.7,
                                                                  5)
