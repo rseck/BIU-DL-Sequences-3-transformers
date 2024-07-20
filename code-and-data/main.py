@@ -58,12 +58,12 @@ def save_plot_of_loss_on_train_and_test(train_loss, test_loss, results_path, run
 
 
 def main():
-    for b_s, num_b in [(256, 30000), (512, 20000)]:
+    for data_folder in ["heb-data/"]:
         seq_len = 128
-        batch_size = b_s
-        data_path = "data/"
+        batch_size = 128
+        data_path = data_folder
         results_path = "temp_results"
-        n_layers = 6
+        n_layers = 12
         n_heads = 6
         embed_size = 192
         mlp_hidden_size = embed_size * 4
@@ -72,7 +72,7 @@ def main():
         gradient_clipping = 1.0
         weight_decay = 0.01
 
-        num_batches_to_train = num_b
+        num_batches_to_train = 10
 
         use_scheduler = True
 
