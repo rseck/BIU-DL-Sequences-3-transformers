@@ -58,7 +58,7 @@ def save_plot_of_loss_on_train_and_test(train_loss, test_loss, results_path, run
 
 
 def main():
-    for data_folder in ["heb-data/"]:
+    for data_folder in ["data/", "heb-data/"]:
         seq_len = 128
         batch_size = 128
         data_path = data_folder
@@ -72,7 +72,7 @@ def main():
         gradient_clipping = 1.0
         weight_decay = 0.01
 
-        num_batches_to_train = 10
+        num_batches_to_train = 5000
 
         use_scheduler = True
 
@@ -85,6 +85,8 @@ def main():
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         tokenizer, tokenized_data = data.load_data(data_path)
+        tokenizer_file_path = f"{run_file_name}_tokenizer.pth"
+        torch.save(tokenizer, tokenizer_file_path)
         # NOTE: are data items are longer by one than the sequence length,
         # They will be shortened by 1 when converted to training examples.
         data_iter = iter(data.RandomOrderDataIterator(tokenized_data, seq_len + 1))
